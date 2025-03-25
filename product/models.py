@@ -1,5 +1,7 @@
 import os
 from django.db import models
+
+from account.models import User
 from product.choices import PlantSizeChoices
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -123,22 +125,17 @@ class PlantImage(models.Model):
         verbose_name_plural = 'Рисунки растений'
 
 
-class Cart(models.Model):
-    plant = models.ForeignKey(
-        to=Plant,
-        on_delete=models.CASCADE,
-        related_name='carts',
-        verbose_name='Корзина'
-    )
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = 'Корзина'
-        verbose_name_plural = 'Корзины'
-        ordering = ['-added_at']
+class PlantComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.plant.name
+        return f"Comment by {self.user.username} on {self.plant.name} at {self.created_at}"
+
+    class Meta:
+        ordering = ['created_at']
 
 
 @receiver(post_delete, sender=Plant)

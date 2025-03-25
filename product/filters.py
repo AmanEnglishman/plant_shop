@@ -14,8 +14,9 @@ class PlantFilter(django_filters.FilterSet):
         field_name='size',
         choices=PlantSizeChoices.choices
     )
+    price = django_filters.RangeFilter(field_name='price')
 
     class Meta:
         model = Plant
-        fields = ['category', 'size']
+        fields = ['category', 'size', 'price']
 

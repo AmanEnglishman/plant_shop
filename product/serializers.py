@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from product.models import Plant, Category, PlantImage
+from product.models import Plant, Category, PlantImage, Tag, PlantComment
 
 
 class PlantImageSerializer(ModelSerializer):
@@ -32,3 +32,30 @@ class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'product_count')
+
+
+class TagsSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+class PlantCommentsSerializer(ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = PlantComment
+        fields = ('id', 'user', 'text', 'created_at', )
+
+
+class PlantDetailSerializer(ModelSerializer):
+    images = PlantImageSerializer(many=True, read_only=True)
+    category = CategorySerializer(many=True, read_only=True)
+    tags = TagsSerializer(many=True, read_only=True)
+    comments = PlantCommentsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Plant
+        fields = (
+        'id', 'sku', 'category', 'tags', 'images', 'short_description', 'description', 'price', 'rating', 'size',
+            'comments'
+        )
