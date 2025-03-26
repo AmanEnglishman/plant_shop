@@ -102,10 +102,12 @@ class Plant(models.Model):
     def discount_percentage(self):
         if self.discount_price:
             return (100 * self.discount_price) / self.price
+        return 0
 
     def final_product_price(self):
         if self.discount_price:
             return self.price - self.discount_price
+        return self.price
 
 
 class PlantImage(models.Model):

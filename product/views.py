@@ -1,14 +1,16 @@
 from django.db.models import Count, Q
 from drf_spectacular.utils import extend_schema
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from product.filters import PlantFilter
-from product.models import Plant, Category
+from product.models import Plant, Category, PlantComment
 from product.paginations import PlantPagination
-from product.serializers import PlantSerializer, CategorySerializer, PlantDetailSerializer, PlantCommentsSerializer
+from product.permissions import IsOwnerOrAdmin
+from product.serializers import PlantSerializer, CategorySerializer, PlantDetailSerializer, \
+    PlantCommentSerializer
 
 
 @extend_schema(tags=["GET"], summary="List all plants")
@@ -59,22 +61,21 @@ class CategoryAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PlantCommentCreateAPIView(APIView):
-    def post(self, request, plant_id):
-        plant = get_object_or_404(Plant, id=plant_id)
-        data = request.data.copy()
-        data['plant'] = plant.id
+class PlantCommentCreateAPIView(generics.CreateAPIView):
+    queryset = PlantComment.objects.all()
+    serializer_class = PlantCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-        print(f"Plant ID: {data['plant']}")
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-        # if request.user.is_authenticated:
-        #     data['user'] = request.user.id
-        # else:
-        #     return Response({'detail': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = PlantCommentsSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+class PlantCommentDeleteAPIView(generics.DestroyAPIView):
+    queryset = PlantComment.objects.all()
+    serializer_class = PlantCommentSerializer
+    permission_classes = [IsOwnerOrAdmin]
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"detail": "Комментарий удален"}, status=status.HTTP_204_NO_CONTENT)

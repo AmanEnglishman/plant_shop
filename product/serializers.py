@@ -39,23 +39,23 @@ class TagsSerializer(ModelSerializer):
         model = Tag
         fields = ('id', 'name')
 
-class PlantCommentsSerializer(ModelSerializer):
-    user = serializers.StringRelatedField()
 
+class PlantCommentSerializer(ModelSerializer):
     class Meta:
         model = PlantComment
-        fields = ('id', 'user', 'text', 'created_at', )
+        fields = ('id', 'plant', 'text', 'created_at',)
+        read_only_fields = ('id', 'created_at')
 
 
 class PlantDetailSerializer(ModelSerializer):
     images = PlantImageSerializer(many=True, read_only=True)
     category = CategorySerializer(many=True, read_only=True)
     tags = TagsSerializer(many=True, read_only=True)
-    comments = PlantCommentsSerializer(many=True, read_only=True)
+    comments = PlantCommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Plant
         fields = (
-        'id', 'sku', 'category', 'tags', 'images', 'short_description', 'description', 'price', 'rating', 'size',
+            'id', 'sku', 'category', 'tags', 'images', 'short_description', 'description', 'price', 'rating', 'size',
             'comments'
         )
