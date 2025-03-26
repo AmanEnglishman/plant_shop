@@ -100,7 +100,7 @@ class Plant(models.Model):
         return self.name
 
     def discount_percentage(self):
-        if self.discount_price:
+        if self.discount_price and self.price > 0:
             return (100 * self.discount_price) / self.price
         return 0
 

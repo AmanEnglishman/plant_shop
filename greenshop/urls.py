@@ -24,10 +24,13 @@ apps_urlpatterns = [
     path('api/v1/plant/', include('product.urls')),
     path('api/v1/post/', include('post.urls')),
     path('api/v1/account/', include('account.urls')),
+    path('api/v1/', include('cart.urls')),
+    path('api/v1/checkout/', include('checkout.urls')),
 ]
 
 urlpatterns += swagger_urlpatterns
 urlpatterns += apps_urlpatterns
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
