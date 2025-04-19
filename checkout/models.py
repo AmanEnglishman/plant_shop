@@ -53,7 +53,7 @@ class Checkout(models.Model):
         chat_id = '5249187638'
 
         bot = telebot.TeleBot(bot_token)
-        message_text = (f"ФИО: {self.first_name} {self.last_name}\n"
+        message_text = (f"ФИО: {self.first_name} {pipself.last_name}\n"
                         f"Номер: {self.phone_number}\n"
                         f"Страна: {self.country}\n"
                         f'Город: {self.city}\n'
